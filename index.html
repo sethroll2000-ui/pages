@@ -4,64 +4,62 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101827">
-  <title>Vendor Access Request · Demo</title>
+  <title>Vendor Approval Request</title>
   <style>
     :root { color-scheme: dark; --bg:#0b1220; --panel:#141f32; --muted:#9aabc2; --text:#f4f7fb; --accent:#79a8ff; --line:#2b3a52; }
     * { box-sizing: border-box; }
-    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:radial-gradient(ellipse at top, #1c3150 0, var(--bg) 58%); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-    main { width:min(100%, 440px); }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:radial-gradient(ellipse at top,#1c3150 0,var(--bg) 58%); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+    main { width:min(100%,440px); }
     .card { padding:clamp(24px,6vw,36px); border:1px solid var(--line); border-radius:22px; background:rgba(20,31,50,.96); box-shadow:0 24px 70px #0006; }
-    .demo { display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border:1px solid #755c2b; border-radius:999px; background:#392d19; color:#ffd88a; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
-    h1 { margin:18px 0 6px; font-size:clamp(25px,6vw,32px); letter-spacing:-.04em; }
-    .intro { margin:0 0 26px; color:var(--muted); }
+    h1 { margin:0 0 7px; font-size:clamp(25px,6vw,32px); letter-spacing:-.04em; }
+    .intro { margin:0 0 25px; color:var(--muted); }
     label { display:block; margin:16px 0 7px; font-size:14px; font-weight:600; }
     input { width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:11px; outline:none; background:#0d1727; color:var(--text); font:inherit; }
     input:focus { border-color:var(--accent); box-shadow:0 0 0 3px #79a8ff25; }
     button { width:100%; margin-top:22px; padding:13px 16px; border:0; border-radius:11px; background:var(--accent); color:#091426; font:700 15px system-ui,sans-serif; cursor:pointer; }
-    button:hover { filter:brightness(1.08); }
     button:focus-visible { outline:3px solid white; outline-offset:3px; }
-    .notice { margin:18px 0 0; color:var(--muted); font-size:12px; }
-    #result { display:none; margin-top:24px; padding-top:22px; border-top:1px solid var(--line); }
-    #result h2 { margin:0 0 6px; font-size:18px; }
-    .code-row { display:flex; gap:10px; align-items:center; margin:14px 0; }
-    #code { flex:1; min-width:0; padding:13px 10px; border:1px dashed #5475a4; border-radius:10px; background:#0b1729; color:#c5dcff; text-align:center; font:700 clamp(18px,5vw,24px) ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.08em; overflow-wrap:anywhere; }
-    #copy { width:auto; flex:none; margin:0; padding:13px 15px; }
-    .waiting { margin:10px 0 0; color:#c3d0e2; }
-    #copy-status { min-height:20px; margin:8px 0 0; color:#9bd9b0; font-size:13px; }
-    .fine-print { margin:18px 0 0; color:#8293aa; font-size:12px; }
+    .error { min-height:22px; margin:9px 0 0; color:#ff9d9d; font-size:13px; }
+    #waiting { display:none; text-align:center; }
+    .spinner { width:38px; height:38px; margin:22px auto; border:3px solid #344966; border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .code { margin:18px 0 12px; padding:15px 10px; border:1px dashed #5475a4; border-radius:10px; background:#0b1729; color:#c5dcff; font:700 clamp(20px,5vw,25px) ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.08em; overflow-wrap:anywhere; }
+    .subtle { color:var(--muted); font-size:13px; }
+    .fine-print { margin:22px 0 0; color:#8293aa; font-size:11px; text-align:center; }
+    #copy-status { min-height:20px; color:#9bd9b0; font-size:13px; }
   </style>
 </head>
 <body>
   <main>
     <section class="card" aria-labelledby="page-title">
-      <span class="demo">Demo only · No real sign-in</span>
-      <h1 id="page-title">Vendor access request</h1>
-      <p class="intro">Enter a name and password to generate a sample request code.</p>
-      <form id="login-form">
-        <label for="username">User name</label>
-        <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter your user name" required>
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter any demo password" required>
-        <button type="submit">Generate request code</button>
-      </form>
-      <p class="notice">This is a front-end demonstration. Your entries are not sent to a server or saved.</p>
-      <section id="result" aria-live="polite" aria-labelledby="result-title">
-        <h2 id="result-title">Your request code</h2>
-        <div class="code-row">
-          <output id="code" aria-label="12 digit request code"></output>
-          <button id="copy" type="button">Copy</button>
-        </div>
+      <div id="request">
+        <h1 id="page-title">Vendor approval request</h1>
+        <p class="intro">Enter your assigned user name to create an approval request.</p>
+        <form id="request-form" novalidate>
+          <label for="username">User name</label>
+          <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter user name" required>
+          <p class="error" id="error" role="alert"></p>
+          <button type="submit">Submit request</button>
+        </form>
+      </div>
+      <section id="waiting" aria-live="polite" aria-labelledby="waiting-title">
+        <div class="spinner" aria-hidden="true"></div>
+        <h1 id="waiting-title">Waiting for approval</h1>
+        <p class="intro">Your request code is ready.</p>
+        <div class="code" id="request-code" aria-label="12 digit request code"></div>
+        <button id="copy" type="button">Copy request code</button>
         <p id="copy-status" role="status"></p>
-        <p class="waiting">Copy the code and send it to your vendor. Then wait for approval.</p>
-        <p class="fine-print">This sample code is generated in your browser only. It is not verified by a vendor and does not grant access.</p>
+        <p class="subtle">Copy the code and send it to your vendor. Please wait for their response.</p>
       </section>
+      <p class="fine-print">Test page: this request is generated in your browser. No vendor is notified and approval is not verified here.</p>
     </section>
   </main>
   <script>
-    const form = document.getElementById('login-form');
-    const result = document.getElementById('result');
-    const codeOutput = document.getElementById('code');
-    const copyButton = document.getElementById('copy');
+    const form = document.getElementById('request-form');
+    const requestPanel = document.getElementById('request');
+    const waitingPanel = document.getElementById('waiting');
+    const username = document.getElementById('username');
+    const error = document.getElementById('error');
+    const codeOutput = document.getElementById('request-code');
     const copyStatus = document.getElementById('copy-status');
 
     function makeCode() {
@@ -72,25 +70,28 @@
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      if (!form.reportValidity()) return;
-      // Demo only: do not transmit or store the entered credentials.
+      if (username.value.trim() !== 'user-6258') {
+        error.textContent = 'Invalid user name. Please enter user-6258.';
+        username.setAttribute('aria-invalid', 'true');
+        return;
+      }
+      error.textContent = '';
+      username.removeAttribute('aria-invalid');
       codeOutput.textContent = makeCode();
-      copyStatus.textContent = '';
-      result.style.display = 'block';
-      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      requestPanel.hidden = true;
+      waitingPanel.style.display = 'block';
     });
 
-    copyButton.addEventListener('click', async () => {
-      const code = codeOutput.textContent;
+    document.getElementById('copy').addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(code);
-        copyStatus.textContent = 'Code copied to clipboard.';
+        await navigator.clipboard.writeText(codeOutput.textContent);
+        copyStatus.textContent = 'Request code copied.';
       } catch {
-        const selection = document.createRange();
-        selection.selectNodeContents(codeOutput);
-        const current = window.getSelection();
-        current.removeAllRanges();
-        current.addRange(selection);
+        const range = document.createRange();
+        range.selectNodeContents(codeOutput);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
         copyStatus.textContent = 'Select and copy the highlighted code.';
       }
     });
