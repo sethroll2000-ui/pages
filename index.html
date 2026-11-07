@@ -71,7 +71,7 @@
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       if (username.value.trim() !== 'user-6258') {
-        error.textContent = 'Invalid user name. Please enter user-6258.';
+        error.textContent = 'Invalid user name. Please enter valid name';
         username.setAttribute('aria-invalid', 'true');
         return;
       }
