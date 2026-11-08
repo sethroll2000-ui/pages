@@ -3,98 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>Vendor Approval Request</title>
+  <meta name="theme-color" content="#0b1720">
+  <title>Approval Status</title>
   <style>
-    :root { color-scheme: dark; --bg:#0b1220; --panel:#141f32; --muted:#9aabc2; --text:#f4f7fb; --accent:#79a8ff; --line:#2b3a52; }
-    * { box-sizing: border-box; }
-    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:radial-gradient(ellipse at top,#1c3150 0,var(--bg) 58%); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+    :root { color-scheme: dark; --bg:#09151b; --panel:#12232a; --text:#f3faf6; --muted:#a9bbb5; --green:#39d98a; --line:#29423c; --amber:#ffd27a; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; padding:24px; display:grid; place-items:center; background:radial-gradient(ellipse at top,#173a32 0,var(--bg) 62%); color:var(--text); font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     main { width:min(100%,440px); }
-    .card { padding:clamp(24px,6vw,36px); border:1px solid var(--line); border-radius:22px; background:rgba(20,31,50,.96); box-shadow:0 24px 70px #0006; }
-    h1 { margin:0 0 7px; font-size:clamp(25px,6vw,32px); letter-spacing:-.04em; }
-    .intro { margin:0 0 25px; color:var(--muted); }
-    label { display:block; margin:16px 0 7px; font-size:14px; font-weight:600; }
-    input { width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:11px; outline:none; background:#0d1727; color:var(--text); font:inherit; }
-    input:focus { border-color:var(--accent); box-shadow:0 0 0 3px #79a8ff25; }
-    button { width:100%; margin-top:22px; padding:13px 16px; border:0; border-radius:11px; background:var(--accent); color:#091426; font:700 15px system-ui,sans-serif; cursor:pointer; }
-    button:focus-visible { outline:3px solid white; outline-offset:3px; }
-    .error { min-height:22px; margin:9px 0 0; color:#ff9d9d; font-size:13px; }
-    #waiting { display:none; text-align:center; }
-    .spinner { width:38px; height:38px; margin:22px auto; border:3px solid #344966; border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .code { margin:18px 0 12px; padding:15px 10px; border:1px dashed #5475a4; border-radius:10px; background:#0b1729; color:#c5dcff; font:700 clamp(20px,5vw,25px) ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.08em; overflow-wrap:anywhere; }
-    .subtle { color:var(--muted); font-size:13px; }
-    .fine-print { margin:22px 0 0; color:#8293aa; font-size:11px; text-align:center; }
-    #copy-status { min-height:20px; color:#9bd9b0; font-size:13px; }
+    .panel { padding:clamp(28px,7vw,42px) 26px; text-align:center; border:1px solid var(--line); border-radius:24px; background:rgba(18,35,42,.97); box-shadow:0 24px 70px #0007; }
+    .tick { width:82px; height:82px; margin:0 auto 22px; display:grid; place-items:center; border-radius:50%; background:#123e2c; border:2px solid #2c9e68; color:var(--green); box-shadow:0 0 35px #39d98a25; }
+    .tick svg { width:43px; height:43px; }
+    h1 { margin:0; font-size:clamp(30px,8vw,38px); letter-spacing:-.04em; }
+    .subtitle { margin:9px 0 27px; color:var(--muted); }
+    .alert { padding:16px; border:1px solid #705a2f; border-radius:14px; background:#332b1c; color:var(--amber); text-align:left; }
+    .alert-title { display:flex; align-items:center; gap:9px; margin:0 0 5px; font-weight:750; }
+    .alert p { margin:0; color:#f4dfb5; font-size:14px; }
+    .test-note { margin:22px 0 0; color:#849b93; font-size:11px; }
   </style>
 </head>
 <body>
   <main>
-    <section class="card" aria-labelledby="page-title">
-      <div id="request">
-        <h1 id="page-title">Vendor approval request</h1>
-        <p class="intro">Enter your assigned user name to create an approval request.</p>
-        <form id="request-form" novalidate>
-          <label for="username">User name</label>
-          <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter user name" required>
-          <p class="error" id="error" role="alert"></p>
-          <button type="submit">Submit request</button>
-        </form>
+    <section class="panel" aria-labelledby="status-title">
+      <div class="tick" role="img" aria-label="Green check mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m5 12.5 4.3 4.3L19.5 6.8" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <section id="waiting" aria-live="polite" aria-labelledby="waiting-title">
-        <div class="spinner" aria-hidden="true"></div>
-        <h1 id="waiting-title">Waiting for approval</h1>
-        <p class="intro">Your request code is ready.</p>
-        <div class="code" id="request-code" aria-label="12 digit request code"></div>
-        <button id="copy" type="button">Copy request code</button>
-        <p id="copy-status" role="status"></p>
-        <p class="subtle">Copy the code and send it to your vendor. Please wait for their response.</p>
-      </section>
-      <p class="fine-print">Test page: this request is generated in your browser. No vendor is notified and approval is not verified here.</p>
+      <h1 id="status-title">Approved</h1>
+      <p class="subtitle">Your request status is approved.</p>
+      <div class="alert" role="alert">
+        <div class="alert-title">
+          <span aria-hidden="true">⚠</span>
+          <span>Device not supported</span>
+        </div>
+        <p>Your device is not supported. Please try again using a supported device.</p>
+      </div>
+      <p class="test-note">Test status screen — no real approval or device check is performed.</p>
     </section>
   </main>
-  <script>
-    const form = document.getElementById('request-form');
-    const requestPanel = document.getElementById('request');
-    const waitingPanel = document.getElementById('waiting');
-    const username = document.getElementById('username');
-    const error = document.getElementById('error');
-    const codeOutput = document.getElementById('request-code');
-    const copyStatus = document.getElementById('copy-status');
-
-    function makeCode() {
-      const digits = new Uint8Array(12);
-      crypto.getRandomValues(digits);
-      return Array.from(digits, value => String(value % 10)).join('');
-    }
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      if (username.value.trim() !== 'user-6263') {
-        error.textContent = 'Invalid user name. Please enter valid name';
-        username.setAttribute('aria-invalid', 'true');
-        return;
-      }
-      error.textContent = '';
-      username.removeAttribute('aria-invalid');
-      codeOutput.textContent = makeCode();
-      requestPanel.hidden = true;
-      waitingPanel.style.display = 'block';
-    });
-
-    document.getElementById('copy').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(codeOutput.textContent);
-        copyStatus.textContent = 'Request code copied.';
-      } catch {
-        const range = document.createRange();
-        range.selectNodeContents(codeOutput);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        copyStatus.textContent = 'Select and copy the highlighted code.';
-      }
-    });
-  </script>
 </body>
 </html>
